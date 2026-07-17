@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { sql, DB_CONFIGURED } from '@/lib/db';
 import { confirmQuote } from '@/lib/actions/quoteActions';
+import { formatDate } from '@/lib/format';
 
 export const metadata = { title: 'Confirmer votre devis' };
 export const dynamic = 'force-dynamic';
@@ -48,7 +49,7 @@ export default async function QuoteActionPage({ params }) {
             <div className="summary-row"><span>Type de transport</span><span>{quote.transport_type}</span></div>
             <div className="summary-row"><span>Véhicule</span><span>{quote.vehicle_name || 'Non précisé'}</span></div>
             <div className="summary-row"><span>Trajet</span><span>{quote.pickup_city} → {quote.dropoff_city}</span></div>
-            <div className="summary-row"><span>Date</span><span>{quote.transport_date} à {quote.transport_time}</span></div>
+            <div className="summary-row"><span>Date</span><span>{formatDate(quote.transport_date)} à {quote.transport_time}</span></div>
             <div className="summary-row"><span>Montant du devis</span><span>{quote.price_eur} €</span></div>
           </div>
 

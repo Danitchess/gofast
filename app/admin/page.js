@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { sql, DB_CONFIGURED } from '@/lib/db';
 import { ADMIN_COOKIE, isValidSession } from '@/lib/adminAuth';
 import { sendQuote, logoutAdmin } from '@/lib/actions/adminActions';
+import { formatDate } from '@/lib/format';
 
 export const metadata = { title: 'Espace employé' };
 export const dynamic = 'force-dynamic';
@@ -127,7 +128,7 @@ function QuoteSummary({ q }) {
         <div className="summary-row"><span>Type</span><span>{q.transport_type}</span></div>
         <div className="summary-row"><span>Véhicule</span><span>{q.vehicle_name || 'Non précisé'}</span></div>
         <div className="summary-row"><span>Trajet</span><span>{q.pickup_city} ({q.pickup_country}) → {q.dropoff_city} ({q.dropoff_country})</span></div>
-        <div className="summary-row"><span>Date</span><span>{q.transport_date} à {q.transport_time}</span></div>
+        <div className="summary-row"><span>Date</span><span>{formatDate(q.transport_date)} à {q.transport_time}</span></div>
         <div className="summary-row"><span>Contact</span><span>{q.customer_email} · {q.customer_phone}</span></div>
         {q.notes && <div className="summary-row"><span>Remarques</span><span>{q.notes}</span></div>}
       </div>
