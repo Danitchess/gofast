@@ -104,14 +104,16 @@ export async function POST(request) {
     }
   }
 
-  try {
-    const req1 = newQuoteRequestEmail(quote);
-    await sendEmail({ to: COMPANY_INBOX, subject: req1.subject, html: req1.html });
-    const req2 = customerAckEmail(quote);
-    await sendEmail({ to: body.email, subject: req2.subject, html: req2.html });
-  } catch (err) {
-    console.error('Failed to send confirmation emails', err);
-  }
+  // Sent independently: a failure on one (e.g. Resend sandbox rejecting the
+  // company inbox) must not prevent the other from going out.
+  const req1 = newQuoteRequestEmail(quote);
+  const req2 = customerAckEmail(quote);
+  const results = await Promise.allSettled([
+    sendEmail({ to: COMPANY_INBOX, subject: req1.subject, html: req1.html }),
+    sendEmail({ to: body.email, subject: req2.subject, html: req2.html }),
+  ]);
+  if (results[0].status === 'rejected') console.error('Failed to notify company inbox', results[0].reason);
+  if (results[1].status === 'rejected') console.error('Failed to send customer acknowledgement', results[1].reason);
 
   return Response.json({ ok: true, quoteId, demo: !DB_CONFIGURED });
 }
